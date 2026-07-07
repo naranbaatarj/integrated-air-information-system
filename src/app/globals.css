@@ -1,0 +1,710 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-noto-sans), system-ui, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+.prose-content h2 {
+  @apply mt-6 mb-3 text-xl font-semibold text-slate-900;
+}
+
+.prose-content p {
+  @apply mb-4 leading-relaxed text-slate-700;
+}
+
+.prose-content ul {
+  @apply mb-4 list-disc space-y-2 pl-6 text-slate-700;
+}
+
+.prose-content li {
+  @apply leading-relaxed;
+}
+
+.prose-editor h2 {
+  @apply mb-2 mt-4 text-xl font-semibold text-slate-900;
+}
+
+.prose-editor h3 {
+  @apply mb-2 mt-3 text-lg font-semibold text-slate-900;
+}
+
+.prose-editor p {
+  @apply mb-3 leading-relaxed text-slate-700;
+}
+
+.prose-editor ul {
+  @apply mb-3 list-disc space-y-1 pl-6 text-slate-700;
+}
+
+.prose-editor ol {
+  @apply mb-3 list-decimal space-y-1 pl-6 text-slate-700;
+}
+
+.prose-editor li {
+  @apply leading-relaxed;
+}
+
+.prose-editor a {
+  @apply text-sky-600 underline;
+}
+
+.prose-editor p.is-editor-empty:first-child::before {
+  @apply pointer-events-none float-left h-0 text-slate-400;
+  content: attr(data-placeholder);
+}
+
+/* Air pollution banner animations */
+.air-pollution-banner {
+  background: #ffffff;
+}
+
+.air-pollution-banner[data-air-theme="night"] {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 55%, #0f172a 100%);
+  border-color: #334155;
+}
+
+.air-pollution-banner-glow {
+  background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(14, 165, 233, 0.08), transparent);
+  transition: background 0.7s ease;
+}
+
+.air-pollution-banner[data-air-theme="night"] .air-pollution-banner-glow {
+  background: radial-gradient(ellipse 70% 50% at 50% 30%, rgba(56, 189, 248, 0.12), transparent);
+}
+
+.air-pollution-banner-subtitle {
+  color: rgba(2, 132, 199, 0.8);
+  transition: color 0.7s ease;
+}
+
+.air-pollution-banner[data-air-theme="night"] .air-pollution-banner-subtitle {
+  color: rgba(125, 211, 252, 0.75);
+}
+
+.air-pollution-banner-title {
+  color: #075985;
+  transition: color 0.7s ease;
+}
+
+.air-pollution-banner[data-air-theme="night"] .air-pollution-banner-title {
+  color: #e0f2fe;
+}
+
+.air-pollution-banner[data-air-theme="night"] .air-pollution-theme-btn {
+  border-color: #475569;
+  background: rgba(30, 41, 59, 0.9);
+  color: #e2e8f0;
+}
+
+.air-pollution-banner[data-air-theme="night"] .air-pollution-theme-btn:hover {
+  background: #334155;
+}
+
+/* SVG gradient stops */
+.air-pollution-banner .sky-fade-start {
+  stop-color: #e0f2fe;
+  stop-opacity: 0;
+}
+
+.air-pollution-banner .sky-fade-end {
+  stop-color: #e0f2fe;
+  stop-opacity: 0.6;
+}
+
+.air-pollution-banner[data-air-theme="night"] .sky-fade-start {
+  stop-color: #1e3a5f;
+  stop-opacity: 0;
+}
+
+.air-pollution-banner[data-air-theme="night"] .sky-fade-end {
+  stop-color: #334155;
+  stop-opacity: 0.5;
+}
+
+.air-pollution-banner .smoke-grad-start {
+  stop-color: #94a3b8;
+  stop-opacity: 0.5;
+}
+
+.air-pollution-banner .smoke-grad-end {
+  stop-color: #cbd5e1;
+  stop-opacity: 0;
+}
+
+.air-pollution-banner[data-air-theme="night"] .smoke-grad-start {
+  stop-color: #cbd5e1;
+  stop-opacity: 0.55;
+}
+
+.air-pollution-banner[data-air-theme="night"] .smoke-grad-end {
+  stop-color: #94a3b8;
+  stop-opacity: 0;
+}
+
+.air-pollution-banner .smoke-warm-start {
+  stop-color: #fb923c;
+  stop-opacity: 0.45;
+}
+
+.air-pollution-banner .smoke-warm-end {
+  stop-color: #fdba74;
+  stop-opacity: 0;
+}
+
+.air-pollution-banner[data-air-theme="night"] .smoke-warm-start {
+  stop-color: #fb923c;
+  stop-opacity: 0.65;
+}
+
+.air-pollution-banner[data-air-theme="night"] .smoke-warm-end {
+  stop-color: #fed7aa;
+  stop-opacity: 0;
+}
+
+/* Day / night scene elements */
+.air-pollution-banner .day-sun {
+  fill: #fde68a;
+  opacity: 0.85;
+  transition: opacity 0.7s ease;
+}
+
+.air-pollution-banner[data-air-theme="night"] .day-sun {
+  opacity: 0;
+}
+
+.air-pollution-banner .night-sky-elements {
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.air-pollution-banner[data-air-theme="night"] .night-sky-elements {
+  opacity: 1;
+}
+
+.air-pollution-banner .moon {
+  fill: #fef3c7;
+  opacity: 0.9;
+}
+
+.air-pollution-banner .star {
+  fill: #fef9c3;
+  opacity: 0.7;
+}
+
+.air-pollution-banner .star-1 { animation: star-twinkle 3s ease-in-out infinite; }
+.air-pollution-banner .star-2 { animation: star-twinkle 4s ease-in-out infinite 0.5s; }
+.air-pollution-banner .star-3 { animation: star-twinkle 3.5s ease-in-out infinite 1s; }
+.air-pollution-banner .star-4 { animation: star-twinkle 5s ease-in-out infinite 0.3s; }
+.air-pollution-banner .star-5 { animation: star-twinkle 4.5s ease-in-out infinite 1.2s; }
+.air-pollution-banner .star-6 { animation: star-twinkle 3.8s ease-in-out infinite 0.8s; }
+.air-pollution-banner .star-7 { animation: star-twinkle 4.2s ease-in-out infinite 1.5s; }
+
+.air-pollution-banner .building-window-glow {
+  fill: #fef08a;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.air-pollution-banner .building-window {
+  fill: #bae6fd;
+  transition: fill 0.7s ease, opacity 0.7s ease;
+}
+
+.air-pollution-banner[data-air-theme="night"] .building-window-glow {
+  opacity: 0.88;
+}
+
+.air-pollution-banner[data-air-theme="night"] .building-window {
+  fill: #1e3a5f;
+  opacity: 0.85;
+}
+
+.air-pollution-banner[data-air-theme="night"] .window-flicker-1 { animation: window-flicker 5s ease-in-out infinite; }
+.air-pollution-banner[data-air-theme="night"] .window-flicker-2 { animation: window-flicker 4.5s ease-in-out infinite 0.4s; }
+.air-pollution-banner[data-air-theme="night"] .window-flicker-3 { animation: window-flicker 6s ease-in-out infinite 0.8s; }
+.air-pollution-banner[data-air-theme="night"] .window-flicker-4 { animation: window-flicker 5.5s ease-in-out infinite 1.2s; }
+.air-pollution-banner[data-air-theme="night"] .window-flicker-5 { animation: window-flicker 4.8s ease-in-out infinite 0.6s; }
+.air-pollution-banner[data-air-theme="night"] .window-flicker-6 { animation: window-flicker 5.2s ease-in-out infinite 1.4s; }
+.air-pollution-banner[data-air-theme="night"] .window-flicker-7 { animation: window-flicker 4.6s ease-in-out infinite 0.3s; }
+.air-pollution-banner[data-air-theme="night"] .window-flicker-8 { animation: window-flicker 5.8s ease-in-out infinite 1s; }
+.air-pollution-banner[data-air-theme="night"] .window-flicker-9 { animation: window-flicker 4.4s ease-in-out infinite 1.6s; }
+.air-pollution-banner[data-air-theme="night"] .window-flicker-10 { animation: window-flicker 5.4s ease-in-out infinite 0.7s; }
+.air-pollution-banner[data-air-theme="night"] .window-flicker-11 { animation: window-flicker 4.9s ease-in-out infinite 1.1s; }
+.air-pollution-banner[data-air-theme="night"] .window-flicker-12 { animation: window-flicker 5.6s ease-in-out infinite 0.5s; }
+
+/* Scene colors — day */
+.air-pollution-banner .scene-ground-base { fill: #f1f5f9; transition: fill 0.7s ease; }
+.air-pollution-banner .scene-ground-edge { stroke: #e2e8f0; transition: stroke 0.7s ease; }
+.air-pollution-banner .home-ground { fill: #e8edf2; transition: fill 0.7s ease; }
+.air-pollution-banner .factory-top { fill: #64748b; transition: fill 0.7s ease; }
+.air-pollution-banner .factory-left { fill: #475569; transition: fill 0.7s ease; }
+.air-pollution-banner .factory-right { fill: #334155; transition: fill 0.7s ease; }
+.air-pollution-banner .factory-chimney { fill: #64748b; transition: fill 0.7s ease; }
+.air-pollution-banner .building-a-top { fill: #0ea5e9; transition: fill 0.7s ease; }
+.air-pollution-banner .building-a-left { fill: #0284c7; transition: fill 0.7s ease; }
+.air-pollution-banner .building-a-right { fill: #0369a1; transition: fill 0.7s ease; }
+.air-pollution-banner .building-b-top { fill: #22d3ee; transition: fill 0.7s ease; }
+.air-pollution-banner .building-b-left { fill: #06b6d4; transition: fill 0.7s ease; }
+.air-pollution-banner .building-b-right { fill: #0891b2; transition: fill 0.7s ease; }
+.air-pollution-banner .building-c-top { fill: #38bdf8; transition: fill 0.7s ease; }
+.air-pollution-banner .building-c-left { fill: #0ea5e9; transition: fill 0.7s ease; }
+.air-pollution-banner .building-c-right { fill: #0284c7; transition: fill 0.7s ease; }
+.air-pollution-banner .house-a-top { fill: #86efac; transition: fill 0.7s ease; }
+.air-pollution-banner .house-a-left { fill: #4ade80; transition: fill 0.7s ease; }
+.air-pollution-banner .house-a-right { fill: #22c55e; transition: fill 0.7s ease; }
+.air-pollution-banner .house-b-top { fill: #bbf7d0; transition: fill 0.7s ease; }
+.air-pollution-banner .house-b-left { fill: #86efac; transition: fill 0.7s ease; }
+.air-pollution-banner .house-b-right { fill: #4ade80; transition: fill 0.7s ease; }
+.air-pollution-banner .tree-crown { fill: #86efac; transition: fill 0.7s ease; }
+.air-pollution-banner .tree-trunk { fill: #65a30d; transition: fill 0.7s ease; }
+.air-pollution-banner .home-shadow { fill: #e2e8f0; opacity: 0.55; transition: fill 0.7s ease; }
+.air-pollution-banner .home-wall-top { fill: #f8fafc; transition: fill 0.7s ease; }
+.air-pollution-banner .home-wall-left { fill: #e2e8f0; transition: fill 0.7s ease; }
+.air-pollution-banner .home-wall-right { fill: #cbd5e1; transition: fill 0.7s ease; }
+.air-pollution-banner .home-roof-left { fill: #94a3b8; transition: fill 0.7s ease; }
+.air-pollution-banner .home-roof-right { fill: #64748b; transition: fill 0.7s ease; }
+.air-pollution-banner .home-chimney { fill: #78716c; transition: fill 0.7s ease; }
+.air-pollution-banner .flow-line-1 { stroke: #38bdf8; transition: stroke 0.7s ease; }
+.air-pollution-banner .flow-line-2 { stroke: #22d3ee; transition: stroke 0.7s ease; }
+.air-pollution-banner .wind-grad-start {
+  stop-color: #bae6fd;
+  stop-opacity: 0;
+}
+
+.air-pollution-banner .wind-grad-mid {
+  stop-color: #bae6fd;
+  stop-opacity: 0.35;
+}
+
+.air-pollution-banner .wind-grad-bright {
+  stop-color: #7dd3fc;
+  stop-opacity: 0.45;
+}
+
+.air-pollution-banner .wind-grad-end {
+  stop-color: #e0f2fe;
+  stop-opacity: 0;
+}
+
+.air-pollution-banner[data-air-theme="night"] .wind-grad-mid {
+  stop-color: #67e8f9;
+  stop-opacity: 0.3;
+}
+
+.air-pollution-banner[data-air-theme="night"] .wind-grad-bright {
+  stop-color: #22d3ee;
+  stop-opacity: 0.4;
+}
+
+.air-pollution-banner[data-air-theme="night"] .wind-grad-end {
+  stop-color: #a5f3fc;
+  stop-opacity: 0;
+}
+
+.air-pollution-banner .wind-streak {
+  fill: none;
+  stroke: url(#wind-grad);
+  stroke-linecap: round;
+  stroke-width: 1.3;
+  filter: url(#wind-glow-filter);
+  transition: stroke 0.7s ease;
+}
+
+.air-pollution-banner .wind-glow {
+  stroke: url(#wind-grad);
+  stroke-width: 3;
+  opacity: 0.05;
+  filter: none;
+}
+
+.air-pollution-banner .wind-streak-b {
+  stroke-width: 1.1;
+}
+
+.air-pollution-banner .wind-glow.wind-streak-b {
+  stroke-width: 2.5;
+  opacity: 0.035;
+}
+
+.air-pollution-banner .wind-streak-c {
+  stroke-width: 0.9;
+}
+
+.air-pollution-banner .wind-glow.wind-streak-c {
+  stroke-width: 2;
+  opacity: 0.025;
+}
+
+.air-pollution-banner[data-air-theme="night"] .wind-glow {
+  opacity: 0.08;
+}
+
+.air-pollution-banner[data-air-theme="night"] .wind-glow.wind-streak-b {
+  opacity: 0.06;
+}
+
+.air-pollution-banner[data-air-theme="night"] .wind-glow.wind-streak-c {
+  opacity: 0.04;
+}
+
+.air-pollution-banner .wind-gust {
+  opacity: 0.5;
+}
+
+.air-pollution-banner[data-air-theme="night"] .wind-gust {
+  opacity: 0.6;
+}
+.air-pollution-banner .pm-dot { fill: #94a3b8; transition: fill 0.7s ease; }
+.air-pollution-banner .pm-dot-warm { fill: #fb923c; transition: fill 0.7s ease; }
+.air-pollution-banner .aqi-top { fill: #f8fafc; stroke: #38bdf8; transition: fill 0.7s ease, stroke 0.7s ease; }
+.air-pollution-banner .aqi-left { fill: #e0f2fe; stroke: #38bdf8; transition: fill 0.7s ease, stroke 0.7s ease; }
+.air-pollution-banner .aqi-right { fill: #bae6fd; stroke: #38bdf8; transition: fill 0.7s ease, stroke 0.7s ease; }
+.air-pollution-banner .aqi-mast { stroke: #0284c7; transition: stroke 0.7s ease; }
+.air-pollution-banner .aqi-dot { fill: #0ea5e9; }
+.air-pollution-banner .aqi-ring-stroke { stroke: #38bdf8; transition: stroke 0.7s ease; }
+
+/* Scene colors — night */
+.air-pollution-banner[data-air-theme="night"] .scene-ground-base { fill: #1e293b; }
+.air-pollution-banner[data-air-theme="night"] .scene-ground-edge { stroke: #334155; }
+.air-pollution-banner[data-air-theme="night"] .factory-top { fill: #475569; }
+.air-pollution-banner[data-air-theme="night"] .factory-left { fill: #334155; }
+.air-pollution-banner[data-air-theme="night"] .factory-right { fill: #1e293b; }
+.air-pollution-banner[data-air-theme="night"] .factory-chimney { fill: #64748b; }
+.air-pollution-banner[data-air-theme="night"] .building-a-top { fill: #0369a1; }
+.air-pollution-banner[data-air-theme="night"] .building-a-left { fill: #075985; }
+.air-pollution-banner[data-air-theme="night"] .building-a-right { fill: #0c4a6e; }
+.air-pollution-banner[data-air-theme="night"] .building-b-top { fill: #0891b2; }
+.air-pollution-banner[data-air-theme="night"] .building-b-left { fill: #0e7490; }
+.air-pollution-banner[data-air-theme="night"] .building-b-right { fill: #155e75; }
+.air-pollution-banner[data-air-theme="night"] .building-c-top { fill: #0284c7; }
+.air-pollution-banner[data-air-theme="night"] .building-c-left { fill: #0369a1; }
+.air-pollution-banner[data-air-theme="night"] .building-c-right { fill: #075985; }
+.air-pollution-banner[data-air-theme="night"] .house-a-top { fill: #166534; }
+.air-pollution-banner[data-air-theme="night"] .house-a-left { fill: #14532d; }
+.air-pollution-banner[data-air-theme="night"] .house-a-right { fill: #052e16; }
+.air-pollution-banner[data-air-theme="night"] .house-b-top { fill: #15803d; }
+.air-pollution-banner[data-air-theme="night"] .house-b-left { fill: #166534; }
+.air-pollution-banner[data-air-theme="night"] .house-b-right { fill: #14532d; }
+.air-pollution-banner[data-air-theme="night"] .tree-crown { fill: #166534; }
+.air-pollution-banner[data-air-theme="night"] .tree-trunk { fill: #3f6212; }
+.air-pollution-banner[data-air-theme="night"] .home-shadow { fill: #334155; opacity: 0.45; }
+.air-pollution-banner[data-air-theme="night"] .home-ground { fill: #1e293b; }
+.air-pollution-banner[data-air-theme="night"] .home-wall-top { fill: #cbd5e1; }
+.air-pollution-banner[data-air-theme="night"] .home-wall-left { fill: #94a3b8; }
+.air-pollution-banner[data-air-theme="night"] .home-wall-right { fill: #64748b; }
+.air-pollution-banner[data-air-theme="night"] .home-roof-left { fill: #475569; }
+.air-pollution-banner[data-air-theme="night"] .home-roof-right { fill: #334155; }
+.air-pollution-banner[data-air-theme="night"] .home-chimney { fill: #57534e; }
+.air-pollution-banner[data-air-theme="night"] .flow-line-1 { stroke: #38bdf8; }
+.air-pollution-banner[data-air-theme="night"] .flow-line-2 { stroke: #22d3ee; }
+
+.air-pollution-banner[data-air-theme="night"] .pm-dot { fill: #cbd5e1; }
+.air-pollution-banner[data-air-theme="night"] .pm-dot-warm { fill: #fdba74; }
+.air-pollution-banner[data-air-theme="night"] .aqi-top { fill: #1e293b; stroke: #38bdf8; }
+.air-pollution-banner[data-air-theme="night"] .aqi-left { fill: #0f172a; stroke: #38bdf8; }
+.air-pollution-banner[data-air-theme="night"] .aqi-right { fill: #1e3a5f; stroke: #38bdf8; }
+.air-pollution-banner[data-air-theme="night"] .aqi-mast { stroke: #38bdf8; }
+.air-pollution-banner[data-air-theme="night"] .aqi-dot { fill: #22d3ee; }
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes window-flicker {
+  0%, 100% { opacity: 0.88; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes smoke-rise {
+  0% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-28px);
+    opacity: 0;
+  }
+}
+
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+
+@keyframes exhaust-fade {
+  0% {
+    transform: translateX(0) scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(-12px) scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes aqi-pulse-scale {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.85;
+  }
+}
+
+@keyframes aqi-ring-expand {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes wind-gust-flow {
+  0% {
+    stroke-dashoffset: 52;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.18;
+  }
+  50% {
+    opacity: 0.28;
+  }
+  80% {
+    opacity: 0.18;
+  }
+  100% {
+    stroke-dashoffset: -52;
+    opacity: 0;
+  }
+}
+
+@keyframes wind-gust-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(4px, -1px);
+  }
+}
+
+@keyframes wind-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.03;
+  }
+  50% {
+    opacity: 0.07;
+  }
+}
+
+@keyframes pm-float {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(8px, -10px);
+    opacity: 0.8;
+  }
+}
+
+.smoke-stack ellipse {
+  animation: smoke-rise 3.5s ease-out infinite;
+}
+
+.smoke-stack-1 ellipse:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.smoke-stack-1 ellipse:nth-child(3) {
+  animation-delay: 1.2s;
+}
+
+.smoke-stack-2 ellipse:nth-child(2) {
+  animation-delay: 0.9s;
+}
+
+.smoke-stack-2 ellipse:nth-child(3) {
+  animation-delay: 1.5s;
+}
+
+.smoke-stack-3 ellipse:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.smoke-stack-3 ellipse:nth-child(3) {
+  animation-delay: 1s;
+}
+
+.smoke-stack-home-1 ellipse:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.smoke-stack-home-1 ellipse:nth-child(3) {
+  animation-delay: 1.1s;
+}
+
+.smoke-stack-home-2 ellipse:nth-child(2) {
+  animation-delay: 0.8s;
+}
+
+.smoke-stack-home-2 ellipse:nth-child(3) {
+  animation-delay: 1.4s;
+}
+
+.air-flow-line {
+  animation: flow-dash 2.5s linear infinite;
+}
+
+.air-flow-line-delayed {
+  animation-delay: 1.2s;
+}
+
+.exhaust-puff {
+  animation: exhaust-fade 1.8s ease-out infinite;
+}
+
+.exhaust-puff-delayed {
+  animation-delay: 0.8s;
+}
+
+.aqi-pulse {
+  transform-origin: 18px 14px;
+  animation: aqi-pulse-scale 2s ease-in-out infinite;
+}
+
+.aqi-ring {
+  transform-origin: 18px 14px;
+  animation: aqi-ring-expand 2.5s ease-out infinite;
+}
+
+.aqi-ring-delayed {
+  animation-delay: 1.2s;
+}
+
+.wind-streak:not(.wind-glow) {
+  stroke-dasharray: 18 24;
+  animation: wind-gust-flow 5.5s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.wind-glow {
+  stroke-dasharray: 18 24;
+  animation: wind-gust-flow 5.5s cubic-bezier(0.45, 0, 0.55, 1) infinite,
+    wind-glow-pulse 5.5s ease-in-out infinite;
+}
+
+.wind-streak-b:not(.wind-glow) {
+  animation-duration: 6s;
+  animation-delay: 0.5s;
+}
+
+.wind-glow.wind-streak-b {
+  animation-duration: 6s;
+  animation-delay: 0.5s;
+}
+
+.wind-streak-c:not(.wind-glow) {
+  animation-duration: 6.5s;
+  animation-delay: 1s;
+}
+
+.wind-glow.wind-streak-c {
+  animation-duration: 6.5s;
+  animation-delay: 1s;
+}
+
+.wind-gust {
+  animation: wind-gust-drift 9s ease-in-out infinite;
+}
+
+.wind-gust-2 {
+  animation-duration: 10s;
+  animation-delay: 1.5s;
+}
+
+.wind-gust-delayed {
+  animation-duration: 9.5s;
+  animation-delay: 3s;
+}
+
+.wind-gust-delayed .wind-streak:not(.wind-glow) {
+  animation-delay: 0.6s;
+}
+
+.wind-gust-delayed .wind-glow {
+  animation-delay: 0.6s;
+}
+
+.wind-gust-delayed .wind-streak-b:not(.wind-glow),
+.wind-gust-delayed .wind-glow.wind-streak-b {
+  animation-delay: 0.95s;
+}
+
+.wind-gust-delayed .wind-streak-c:not(.wind-glow),
+.wind-gust-delayed .wind-glow.wind-streak-c {
+  animation-delay: 1.3s;
+}
+
+.pm-particle-1 {
+  animation: pm-float 5s ease-in-out infinite;
+}
+
+.pm-particle-2 {
+  animation: pm-float 4.5s ease-in-out infinite 0.8s;
+}
+
+.pm-particle-3 {
+  animation: pm-float 6s ease-in-out infinite 1.2s;
+}
+
+.pm-particle-4 {
+  animation: pm-float 5.5s ease-in-out infinite 0.4s;
+}
+
+.pm-particle-5 {
+  animation: pm-float 4.8s ease-in-out infinite 1.6s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smoke-stack ellipse,
+  .air-flow-line,
+  .exhaust-puff,
+  .aqi-pulse,
+  .aqi-ring,
+  .wind-gust,
+  .wind-streak,
+  .wind-glow,
+  .pm-particle-1,
+  .pm-particle-2,
+  .pm-particle-3,
+  .pm-particle-4,
+  .pm-particle-5,
+  .air-pollution-banner .star,
+  .building-window-glow {
+    animation: none;
+  }
+}

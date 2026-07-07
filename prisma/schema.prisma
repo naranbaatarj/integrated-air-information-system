@@ -1,0 +1,236 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+}
+
+enum RecordStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  INACTIVE
+}
+
+enum CategoryType {
+  NEWS
+  GUIDELINE
+  OPEN_INFO
+  SERVICE
+}
+
+enum AirQualityLevel {
+  GOOD
+  MODERATE
+  UNHEALTHY_SENSITIVE
+  UNHEALTHY
+  VERY_UNHEALTHY
+  HAZARDOUS
+}
+
+enum ContactMessageStatus {
+  NEW
+  READ
+  REPLIED
+}
+
+model User {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  username     String       @unique
+  password     String
+  role         UserRole     @default(EDITOR)
+  status       RecordStatus @default(ACTIVE)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  news         News[]
+  guidelines   Guideline[]
+  openInfos    OpenInfo[]
+  services     Service[]
+  activityLogs ActivityLog[]
+
+  @@map("users")
+}
+
+model Category {
+  id         String       @id @default(cuid())
+  name       String
+  slug       String       @unique
+  type       CategoryType
+  status     RecordStatus @default(ACTIVE)
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+  news       News[]
+  guidelines Guideline[]
+  openInfos  OpenInfo[]
+
+  @@map("categories")
+}
+
+model News {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  summary     String
+  content     String
+  image       String?
+  categoryId  String?       @map("category_id")
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?     @map("published_at")
+  createdById String        @map("created_by")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  createdBy   User          @relation(fields: [createdById], references: [id])
+
+  @@map("news")
+}
+
+model Guideline {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  summary     String
+  content     String
+  image       String?
+  categoryId  String?       @map("category_id")
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?     @map("published_at")
+  createdById String        @map("created_by")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  createdBy   User          @relation(fields: [createdById], references: [id])
+
+  @@map("guidelines")
+}
+
+model OpenInfo {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  summary     String
+  content     String
+  fileUrl     String?       @map("file_url")
+  categoryId  String?       @map("category_id")
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?     @map("published_at")
+  createdById String        @map("created_by")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  createdBy   User          @relation(fields: [createdById], references: [id])
+
+  @@map("open_infos")
+}
+
+model Service {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  summary     String
+  content     String
+  image       String?
+  status      ContentStatus @default(PUBLISHED)
+  sortOrder   Int           @default(0) @map("sort_order")
+  createdById String        @map("created_by")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  createdBy   User          @relation(fields: [createdById], references: [id])
+
+  @@map("services")
+}
+
+model AirQuality {
+  id             String          @id @default(cuid())
+  date           DateTime
+  location       String
+  aqi            Int
+  pm25           Float           @map("pm25")
+  pm10           Float           @map("pm10")
+  temperature    Float?
+  humidity       Float?
+  status         AirQualityLevel
+  recommendation String
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  @@unique([date, location])
+  @@map("air_quality")
+}
+
+model Page {
+  id        String        @id @default(cuid())
+  title     String
+  slug      String        @unique
+  content   String
+  status    ContentStatus @default(PUBLISHED)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  @@map("pages")
+}
+
+model ContactMessage {
+  id        String               @id @default(cuid())
+  name      String
+  phone     String?
+  email     String
+  subject   String
+  message   String
+  status    ContactMessageStatus @default(NEW)
+  createdAt DateTime             @default(now()) @map("created_at")
+
+  @@map("contact_messages")
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  action    String
+  entity    String
+  entityId  String?  @map("entity_id")
+  details   String?
+  ipAddress String?  @map("ip_address")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("activity_logs")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("settings")
+}
+
+model HomeGuide {
+  id        String        @id @default(cuid())
+  question  String
+  content   String        @default("")
+  videoUrl  String?       @map("video_url")
+  linkUrl   String?       @map("link_url")
+  linkLabel String?       @map("link_label")
+  sortOrder Int           @default(0) @map("sort_order")
+  status    ContentStatus @default(PUBLISHED)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  @@map("home_guides")
+}
