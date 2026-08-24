@@ -7,13 +7,13 @@ import { cn } from "@/lib/utils";
 const footerLinks = {
   main: [
     { href: "/air-quality", label: "Агаарын чанар" },
+    { href: "/co-poisoning", label: "Угаарын хий" },
     { href: "/guidelines", label: "Зөвлөмж" },
     { href: "/news", label: "Мэдээ" },
     { href: "/open-info", label: "Нээлттэй мэдээлэл" },
   ],
   help: [
     { href: "/about", label: "Бидний тухай" },
-    { href: "/co-poisoning", label: "Угаарын хий" },
     { href: "/services", label: "Үйлчилгээ" },
     { href: "/search", label: "Хайлт" },
   ],

@@ -350,6 +350,41 @@ function Empty() {
   );
 }
 
+export function CoHomePreviewCharts({
+  cases,
+  deathCodes,
+  causeLabels,
+}: {
+  cases: CoPoisoningCaseDto[];
+  deathCodes: number[];
+  causeLabels: string[];
+}) {
+  const yearly = useMemo(() => yearlySeries(cases, deathCodes), [cases, deathCodes]);
+  const monthly = useMemo(
+    () => monthlySeries(cases, deathCodes).slice(-12),
+    [cases, deathCodes]
+  );
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <CasesDeathsChart
+        data={yearly}
+        title="Жилийн харьцуулалт"
+        subtitle="Тохиолдол ба нас баралт"
+        filename="home-jil-haritsuulalt"
+      />
+      <CasesDeathsChart
+        data={monthly}
+        title="Сүүлийн 12 сар"
+        subtitle="Сараар нийт тохиолдол"
+        filename="home-sar-huvaari"
+      />
+      <CausePieChart cases={cases} causeLabels={causeLabels} />
+      <GenderChart cases={cases} />
+    </div>
+  );
+}
+
 export function OverviewCharts({
   cases,
   deathCodes,

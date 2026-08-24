@@ -9,10 +9,10 @@ import { cn } from "@/lib/utils";
 const navLinks = [
   { href: "/", label: "Нүүр" },
   { href: "/air-quality", label: "Агаарын чанар" },
+  { href: "/co-poisoning", label: "Угаарын хий" },
   { href: "/guidelines", label: "Зөвлөмж" },
   { href: "/news", label: "Мэдээ" },
   { href: "/open-info", label: "Нээлттэй мэдээлэл" },
-  { href: "/about", label: "Бидний тухай" },
 ];
 
 function BrandMark() {
