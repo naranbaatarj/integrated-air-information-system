@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Baby,
   Flame,
@@ -13,16 +14,27 @@ import {
 import type { CoPoisoningCaseDto } from "@/lib/co-poisoning";
 import type { CoPoisoningOptionsByCategory } from "@/lib/co-poisoning-options";
 import {
-  applyDashboardFilter,
-  caseYear,
   defaultDashboardFilter,
   type DashboardFilter,
 } from "@/lib/co-poisoning-analytics";
 import { CoPoisoningCharts } from "@/components/co-poisoning/charts";
+import { CoPoisoningFilters } from "@/components/co-poisoning/co-poisoning-filters";
+import { CoPoisoningRecordsTable } from "@/components/co-poisoning/co-poisoning-records-table";
 import {
   CO_SAFETY_TIPS,
   computePublicStats,
 } from "@/lib/co-poisoning-public";
+import {
+  applyPublicFilter,
+  buildCauseOptions,
+  buildDistrictOptions,
+  buildKhorooOptions,
+  buildOutcomeOptions,
+  buildSeverityOptions,
+  granularityFromFilter,
+  parseFilterState,
+  resolveDateRange,
+} from "@/lib/co-poisoning-filters";
 import { cn } from "@/lib/utils";
 
 export function CoPublicDashboard({
@@ -34,19 +46,38 @@ export function CoPublicDashboard({
   deathCodes: number[];
   options: CoPoisoningOptionsByCategory;
 }) {
-  const years = useMemo(() => {
-    const set = new Set(cases.map(caseYear));
-    return Array.from(set).sort((a, b) => b - a);
-  }, [cases]);
-
-  const [filter, setFilter] = useState<DashboardFilter>(() =>
-    defaultDashboardFilter(years)
+  const searchParams = useSearchParams();
+  const publicFilter = useMemo(
+    () => parseFilterState(searchParams),
+    [searchParams]
   );
+  const districts = useMemo(() => buildDistrictOptions(cases), [cases]);
+  const khoroos = useMemo(() => buildKhorooOptions(), []);
+  const outcomes = useMemo(() => buildOutcomeOptions(options), [options]);
+  const causes = useMemo(() => buildCauseOptions(options, cases), [cases, options]);
+  const severities = useMemo(() => buildSeverityOptions(options), [options]);
 
   const filteredCases = useMemo(
-    () => applyDashboardFilter(cases, filter),
-    [cases, filter]
+    () => applyPublicFilter(cases, publicFilter),
+    [cases, publicFilter]
   );
+
+  const derivedGranularity = granularityFromFilter(publicFilter);
+  const [granularity, setGranularity] = useState(derivedGranularity);
+
+  useEffect(() => {
+    setGranularity(derivedGranularity);
+  }, [derivedGranularity]);
+
+  const range = resolveDateRange(publicFilter);
+  const chartFilter: DashboardFilter = {
+    ...defaultDashboardFilter(),
+    timeMode: "range",
+    dateFrom: range.from,
+    dateTo: range.to,
+    cause: "all",
+    granularity,
+  };
 
   const stats = useMemo(
     () => computePublicStats(filteredCases, deathCodes),
@@ -55,6 +86,16 @@ export function CoPublicDashboard({
 
   return (
     <div className="space-y-8">
+      <CoPoisoningFilters
+        resultCount={filteredCases.length}
+        cases={cases}
+        districts={districts}
+        khoroos={khoroos}
+        outcomes={outcomes}
+        causes={causes}
+        severities={severities}
+      />
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatTile
           icon={HeartPulse}
@@ -103,9 +144,15 @@ export function CoPublicDashboard({
       <CoPoisoningCharts
         cases={cases}
         filteredCases={filteredCases}
-        filter={filter}
-        onFilterChange={setFilter}
+        filter={chartFilter}
+        onFilterChange={(next) => setGranularity(next.granularity)}
         deathCodes={deathCodes}
+        options={options}
+      />
+
+      <CoPoisoningRecordsTable
+        cases={filteredCases}
+        outcomes={outcomes}
         options={options}
       />
 

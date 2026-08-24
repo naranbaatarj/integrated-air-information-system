@@ -30,6 +30,7 @@ export async function getCoPoisoningPublicData() {
           physicalCondition: true,
           outcome: true,
           cause: true,
+          khoroo: true,
         },
         orderBy: [{ poisonedAt: "desc" }],
       }),

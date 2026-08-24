@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { AdminPageLayout } from "@/components/admin/admin-shell";
 import { prisma } from "@/lib/prisma";
 import { serializeCase } from "@/lib/co-poisoning-schema";
@@ -6,6 +7,7 @@ import {
   groupOptionsByCategory,
   type CoPoisoningOptionDto,
 } from "@/lib/co-poisoning-options";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CoPoisoningManager } from "./co-poisoning-manager";
 
 export const metadata = { title: "Угаарын хийн хордлого" };
@@ -45,12 +47,29 @@ export default async function AdminCoPoisoningPage() {
 
   return (
     <AdminPageLayout>
-      <CoPoisoningManager
-        initialCases={records.map(serializeCase)}
-        initialStats={computeStats(records, deathCodes)}
-        options={options}
-        deathCodes={deathCodes}
-      />
+      <Suspense fallback={<AdminCoPoisoningFallback />}>
+        <CoPoisoningManager
+          initialCases={records.map(serializeCase)}
+          initialStats={computeStats(records, deathCodes)}
+          options={options}
+          deathCodes={deathCodes}
+        />
+      </Suspense>
     </AdminPageLayout>
+  );
+}
+
+function AdminCoPoisoningFallback() {
+  return (
+    <div className="space-y-6" aria-hidden="true">
+      <Skeleton className="h-28 w-full rounded-2xl" />
+      <Skeleton className="h-40 w-full rounded-2xl" />
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <Skeleton key={index} className="h-24 rounded-2xl" />
+        ))}
+      </div>
+      <Skeleton className="h-80 w-full rounded-2xl" />
+    </div>
   );
 }

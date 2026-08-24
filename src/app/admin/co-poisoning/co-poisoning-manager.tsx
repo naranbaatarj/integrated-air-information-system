@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Pencil, Plus, Settings2, Trash2, X } from "lucide-react";
 import {
   buildLocationCode,
@@ -23,12 +23,22 @@ import {
   type CoPoisoningOptionsByCategory,
 } from "@/lib/co-poisoning-options";
 import {
-  applyDashboardFilter,
-  caseYear,
   defaultDashboardFilter,
   type DashboardFilter,
 } from "@/lib/co-poisoning-analytics";
 import { CoPoisoningCharts } from "@/components/co-poisoning/charts";
+import { CoPoisoningFilters } from "@/components/co-poisoning/co-poisoning-filters";
+import {
+  applyPublicFilter,
+  buildCauseOptions,
+  buildDistrictOptions,
+  buildKhorooOptions,
+  buildOutcomeOptions,
+  buildSeverityOptions,
+  granularityFromFilter,
+  parseFilterState,
+  resolveDateRange,
+} from "@/lib/co-poisoning-filters";
 
 type FormState = {
   poisonedAt: string;
@@ -165,25 +175,52 @@ export function CoPoisoningManager({
   deathCodes: number[];
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [cases, setCases] = useState(initialCases);
-  const [stats, setStats] = useState(initialStats);
-  const years = useMemo(() => {
-    const set = new Set(cases.map(caseYear));
-    return Array.from(set).sort((a, b) => b - a);
-  }, [cases]);
-  const [filter, setFilter] = useState<DashboardFilter>(() =>
-    defaultDashboardFilter(years)
-  );
+  const [, setStats] = useState(initialStats);
   const [formOpen, setFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const filteredCases = useMemo(
-    () => applyDashboardFilter(cases, filter),
-    [cases, filter]
+  const publicFilter = useMemo(
+    () => parseFilterState(searchParams),
+    [searchParams]
   );
+  const filterDistricts = useMemo(() => buildDistrictOptions(cases), [cases]);
+  const filterKhoroos = useMemo(() => buildKhorooOptions(), []);
+  const filterOutcomes = useMemo(() => buildOutcomeOptions(options), [options]);
+  const filterCauses = useMemo(
+    () => buildCauseOptions(options, cases),
+    [cases, options]
+  );
+  const filterSeverities = useMemo(
+    () => buildSeverityOptions(options),
+    [options]
+  );
+
+  const filteredCases = useMemo(
+    () => applyPublicFilter(cases, publicFilter),
+    [cases, publicFilter]
+  );
+
+  const derivedGranularity = granularityFromFilter(publicFilter);
+  const [granularity, setGranularity] = useState(derivedGranularity);
+
+  useEffect(() => {
+    setGranularity(derivedGranularity);
+  }, [derivedGranularity]);
+
+  const range = resolveDateRange(publicFilter);
+  const chartFilter: DashboardFilter = {
+    ...defaultDashboardFilter(),
+    timeMode: "range",
+    dateFrom: range.from,
+    dateTo: range.to,
+    cause: "all",
+    granularity,
+  };
 
   const filteredStats = useMemo((): CoPoisoningStats => {
     const total = filteredCases.length;
@@ -352,8 +389,20 @@ export function CoPoisoningManager({
             </Link>
           </div>
         </div>
+      </div>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <CoPoisoningFilters
+        resultCount={filteredCases.length}
+        cases={cases}
+        districts={filterDistricts}
+        khoroos={filterKhoroos}
+        outcomes={filterOutcomes}
+        causes={filterCauses}
+        severities={filterSeverities}
+      />
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <StatCard title="Нийт тохиолдол" value={filteredStats.total} hint="Шүүлтийн дагуу" />
           <StatCard title="Нас баралт" value={filteredStats.deaths} hint="Нас барсан тохиолдол" />
           <StatCard title="Эрэгтэй" value={filteredStats.male} />
@@ -369,8 +418,8 @@ export function CoPoisoningManager({
       <CoPoisoningCharts
         cases={cases}
         filteredCases={filteredCases}
-        filter={filter}
-        onFilterChange={setFilter}
+        filter={chartFilter}
+        onFilterChange={(next) => setGranularity(next.granularity)}
         deathCodes={deathCodes}
         options={options}
       />

@@ -17,6 +17,7 @@ export function toPublicCase(record: {
   physicalCondition: string | null;
   outcome: number | null;
   cause: string | null;
+  khoroo?: number | null;
 }): CoPoisoningCaseDto {
   return {
     id: record.id,
@@ -39,7 +40,7 @@ export function toPublicCase(record: {
     hospitalArrival: null,
     hbco: null,
     household: null,
-    khoroo: null,
+    khoroo: record.khoroo ?? null,
     createdAt: "",
     updatedAt: "",
   };
