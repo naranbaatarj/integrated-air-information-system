@@ -2,6 +2,7 @@ import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { PrismaClient } from "../src/generated/prisma/client";
+import { DEFAULT_CO_POISONING_OPTIONS } from "../src/lib/co-poisoning-options";
 
 const adapter = new PrismaLibSql({
   url: process.env.DATABASE_URL ?? "file:./dev.db",
@@ -116,24 +117,79 @@ async function main() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  await prisma.airQuality.upsert({
-    where: {
-      date_location: { date: today, location: "Улаанбаатар" },
-    },
-    update: {},
-    create: {
-      date: today,
-      location: "Улаанбаатар",
-      aqi: 156,
-      pm25: 68.5,
-      pm10: 112.3,
-      temperature: -8,
-      humidity: 45,
-      status: "UNHEALTHY",
-      recommendation:
-        "Бүх иргэд гадаа гарахаас зайлсхийж, цонх хаах, агаар шүүгч ашиглахыг зөвлөж байна.",
-    },
-  });
+  const stations = [
+    { location: "Улаанбаатар", aqi: 156, pm25: 68.5, pm10: 112.3, offset: 0 },
+    { location: "Баянзүрх дүүрэг", aqi: 156, pm25: 68.5, pm10: 112.3, offset: 0 },
+    { location: "Сүхбаатар дүүрэг", aqi: 142, pm25: 61.2, pm10: 98.4, offset: -1 },
+    { location: "Хан-Уул дүүрэг", aqi: 98, pm25: 34.9, pm10: 72.1, offset: -2 },
+    { location: "Сонгинохайрхан", aqi: 188, pm25: 81.4, pm10: 128.6, offset: 1 },
+  ];
+
+  for (const station of stations) {
+    await prisma.airQuality.upsert({
+      where: {
+        date_location: { date: today, location: station.location },
+      },
+      update: {},
+      create: {
+        date: today,
+        location: station.location,
+        aqi: station.aqi,
+        pm25: station.pm25,
+        pm10: station.pm10,
+        temperature: -8 + station.offset,
+        humidity: 45,
+        status:
+          station.aqi <= 50
+            ? "GOOD"
+            : station.aqi <= 100
+              ? "MODERATE"
+              : station.aqi <= 150
+                ? "UNHEALTHY_SENSITIVE"
+                : station.aqi <= 200
+                  ? "UNHEALTHY"
+                  : station.aqi <= 300
+                    ? "VERY_UNHEALTHY"
+                    : "HAZARDOUS",
+        recommendation:
+          "Бүх иргэд гадаа гарахаас зайлсхийж, цонх хаах, агаар шүүгч ашиглахыг зөвлөж байна.",
+      },
+    });
+  }
+
+  for (let daysAgo = 1; daysAgo <= 13; daysAgo++) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - daysAgo);
+    const variance = Math.sin(daysAgo * 0.8) * 18;
+    const aqi = Math.max(40, Math.min(220, Math.round(156 + variance)));
+    await prisma.airQuality.upsert({
+      where: {
+        date_location: { date, location: "Улаанбаатар" },
+      },
+      update: {},
+      create: {
+        date,
+        location: "Улаанбаатар",
+        aqi,
+        pm25: Math.round(aqi * 0.44 * 10) / 10,
+        pm10: Math.round(aqi * 0.72 * 10) / 10,
+        temperature: -12 + daysAgo,
+        humidity: 40 + (daysAgo % 5) * 3,
+        status:
+          aqi <= 50
+            ? "GOOD"
+            : aqi <= 100
+              ? "MODERATE"
+              : aqi <= 150
+                ? "UNHEALTHY_SENSITIVE"
+                : "UNHEALTHY",
+        recommendation:
+          "Бүх иргэд гадаа гарахаас зайлсхийж, цонх хаах, агаар шүүгч ашиглахыг зөвлөж байна.",
+      },
+    });
+  }
+
+  // Legacy single-record upsert removed — stations + history above
 
   await prisma.page.upsert({
     where: { slug: "about" },
@@ -238,6 +294,19 @@ async function main() {
           status: "PUBLISHED",
         },
       ],
+    });
+  }
+
+  const optionCount = await prisma.coPoisoningOption.count();
+  if (optionCount === 0) {
+    await prisma.coPoisoningOption.createMany({
+      data: DEFAULT_CO_POISONING_OPTIONS.map((o) => ({
+        category: o.category,
+        label: o.label,
+        code: o.code ?? null,
+        sortOrder: o.sortOrder,
+        status: "ACTIVE" as const,
+      })),
     });
   }
 

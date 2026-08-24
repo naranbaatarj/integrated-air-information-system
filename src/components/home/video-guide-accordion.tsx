@@ -61,10 +61,10 @@ export function VideoGuideAccordion({ items }: { items: HomeGuideItem[] }) {
         return (
           <div
             key={item.id}
-            className={`overflow-hidden rounded-xl border transition-colors ${
+            className={`overflow-hidden rounded-2xl border transition-all duration-300 ${
               isOpen
-                ? "border-sky-200 bg-white shadow-sm"
-                : "border-sky-100 bg-sky-50/60 hover:bg-sky-50"
+                ? "border-sky-200 bg-white shadow-[0_16px_40px_-24px_rgba(14,165,233,0.45)]"
+                : "border-slate-200/80 bg-white/80 hover:border-teal-200 hover:bg-teal-50/40"
             }`}
           >
             <button
@@ -73,10 +73,12 @@ export function VideoGuideAccordion({ items }: { items: HomeGuideItem[] }) {
               className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
               aria-expanded={isOpen}
             >
-              <span className="text-base font-medium text-slate-800">{item.question}</span>
+              <span className="text-base font-semibold text-slate-800">{item.question}</span>
               <span
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                  isOpen ? "bg-sky-600 text-white" : "bg-emerald-500 text-white"
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition ${
+                  isOpen
+                    ? "bg-gradient-to-br from-sky-600 to-teal-600 text-white"
+                    : "bg-slate-100 text-slate-600"
                 }`}
               >
                 {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}

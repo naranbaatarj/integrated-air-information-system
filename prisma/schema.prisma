@@ -234,3 +234,55 @@ model HomeGuide {
 
   @@map("home_guides")
 }
+
+model CoPoisoningCase {
+  id                    String   @id @default(cuid())
+  poisonedAt            DateTime @map("poisoned_at")
+  epi                   Int?
+  reportingOrganization String?  @map("reporting_organization")
+  address               String?
+  locationType          String?  @map("location_type")
+  provinceName          String?  @map("province_name")
+  provinceId            Int?     @map("province_id")
+  soumName              String?  @map("soum_name")
+  soumId                Int?     @map("soum_id")
+  khorooSoum            String?  @map("khoroo_soum")
+  code                  String?
+  age                   Int?
+  gender                Int?
+  hospitalArrival       Int?     @map("hospital_arrival")
+  physicalCondition     String?  @map("physical_condition")
+  outcome               Int?
+  hbco                  Float?
+  household             Int?
+  cause                 String?
+  khoroo                Int?
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  @@index([poisonedAt])
+  @@map("co_poisoning_cases")
+}
+
+enum CoPoisoningOptionCategory {
+  REPORTING_ORGANIZATION
+  LOCATION_TYPE
+  HOSPITAL_ARRIVAL
+  PHYSICAL_CONDITION
+  OUTCOME
+  CAUSE
+}
+
+model CoPoisoningOption {
+  id        String                     @id @default(cuid())
+  category  CoPoisoningOptionCategory
+  label     String
+  code      Int?
+  sortOrder Int                        @default(0) @map("sort_order")
+  status    RecordStatus               @default(ACTIVE)
+  createdAt DateTime                   @default(now()) @map("created_at")
+  updatedAt DateTime                   @updatedAt @map("updated_at")
+
+  @@index([category, sortOrder])
+  @@map("co_poisoning_options")
+}

@@ -2,13 +2,23 @@ import { prisma } from "@/lib/prisma";
 import { ContentStatus } from "@/generated/prisma/client";
 
 export async function getTodayAirQuality(location = "Улаанбаатар") {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  return prisma.airQuality.findFirst({
-    where: { date: today, location },
-    orderBy: { createdAt: "desc" },
-  });
+  const { getAqiSnapshot } = await import("@/lib/aqi-service");
+  const snapshot = await getAqiSnapshot(location);
+  if (snapshot.displayState === "empty" || snapshot.displayState === "error") {
+    return null;
+  }
+  if (snapshot.aqi == null || snapshot.level == null) return null;
+  return {
+    aqi: snapshot.aqi,
+    status: snapshot.level,
+    location: snapshot.locationName,
+    date: snapshot.measuredAt ? new Date(snapshot.measuredAt) : new Date(),
+    pm25: snapshot.pm25 ?? 0,
+    pm10: snapshot.pm10 ?? 0,
+    temperature: snapshot.temperature,
+    humidity: snapshot.humidity,
+    recommendation: snapshot.recommendation ?? "",
+  };
 }
 
 export async function getLatestNews(limit = 6) {
