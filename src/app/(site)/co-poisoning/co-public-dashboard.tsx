@@ -106,7 +106,7 @@ export function CoPublicDashboard({
         />
         <StatTile
           icon={Skull}
-          label="Нас баралт"
+          label="Нийт нас баралт (Шүүх шинжилгээний ерөнхий газраар баталгаажсан тоон мэдээлэл)"
           value={stats.deaths}
           tone="bg-rose-50 text-rose-700 ring-rose-100"
           iconBg="bg-rose-100 text-rose-600"

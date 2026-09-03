@@ -23,7 +23,7 @@ export async function CoPoisoningPublicSection({
     <>
       <PageHero
         title="Угаарын хийн хордлого"
-        description="Бүртгэгдсэн тохиолдлын дэлгэрэнгүй статистик, шалтгаан, байршлын тойм болон урьдчилан сэргийлэх зөвлөмж"
+        description="Нийгмийн эрүүл мэндийн үндэсний төвд угаарын хийн хордлогын улмаас эмнэлгийн тусламж, үйлчилгээ авсан тохиолдлын мэдээлэл"
       />
 
       <div className="border-b border-amber-200/70 bg-gradient-to-r from-amber-50 via-orange-50 to-rose-50">

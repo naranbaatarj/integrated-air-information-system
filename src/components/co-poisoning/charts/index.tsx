@@ -6,6 +6,7 @@ import type { CoPoisoningOptionsByCategory } from "@/lib/co-poisoning-options";
 import { type DashboardFilter } from "@/lib/co-poisoning-analytics";
 import { OverviewCharts } from "./overview-charts";
 import { CalendarHeatmap } from "./calendar-heatmap";
+import { LocationMaps } from "./location-maps";
 import { LocationCharts } from "./location-charts";
 import { cn } from "@/lib/utils";
 
@@ -74,6 +75,7 @@ export function CoPoisoningCharts({
         causeLabels={causeLabels}
       />
       <CalendarHeatmap cases={filteredCases} deathCodes={deathCodes} />
+      <LocationMaps cases={filteredCases} deathCodes={deathCodes} />
       <LocationCharts
         cases={filteredCases}
         deathCodes={deathCodes}
