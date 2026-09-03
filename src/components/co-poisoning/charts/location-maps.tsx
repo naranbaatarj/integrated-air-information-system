@@ -78,102 +78,127 @@ export function LocationMaps({
         filename="aimag-gazryn-zurag"
       >
         <div className="relative">
-          <svg
-            viewBox={MONGOLIA_MAP.viewBox}
-            className="h-auto w-full"
-            role="img"
-            aria-label="Монгол улсын аймаг, нийслэлийн газрын зураг"
-          >
-            <rect width="100%" height="100%" fill="#F8FAFC" rx="12" />
-            {MONGOLIA_MAP.regions.map((region) => {
-              const stat = provinceById.get(region.id);
-              const total = stat?.total ?? 0;
-              const isUb = region.id === "Улаанбаатар";
-              const fill = isUb
-                ? total > 0
-                  ? "#FACC15"
-                  : "#FEF08A"
-                : mapFillColor(total, maxProvince);
-              const active = hoverProvince === region.id;
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px] lg:items-start">
+            <div className="relative min-w-0">
+              <svg
+                viewBox={MONGOLIA_MAP.viewBox}
+                className="h-auto w-full"
+                role="img"
+                aria-label="Монгол улсын аймаг, нийслэлийн газрын зураг"
+              >
+                <rect width="100%" height="100%" fill="#F8FAFC" rx="12" />
+                {MONGOLIA_MAP.regions.map((region) => {
+                  const stat = provinceById.get(region.id);
+                  const total = stat?.total ?? 0;
+                  const isUb = region.id === "Улаанбаатар";
+                  const fill = isUb
+                    ? total > 0
+                      ? "#FACC15"
+                      : "#FEF08A"
+                    : mapFillColor(total, maxProvince);
+                  const active = hoverProvince === region.id;
 
-              return (
-                <g key={region.id}>
-                  <path
-                    d={region.d}
-                    fill={fill}
-                    stroke={active ? "#0F172A" : "#FFFFFF"}
-                    strokeWidth={active ? 2.5 : 1}
-                    className="cursor-pointer transition-opacity duration-150"
-                    opacity={hoverProvince && !active ? 0.55 : 1}
-                    onMouseEnter={() => setHoverProvince(region.id)}
-                    onMouseLeave={() => setHoverProvince(null)}
-                    onClick={() => {
-                      if (isUb) scrollToUb();
-                    }}
-                  />
-                  {total > 0 && (
-                    <text
-                      x={region.cx}
-                      y={region.cy}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      className="pointer-events-none select-none"
-                      fontSize={isUb ? 13 : 11}
-                      fontWeight={700}
-                      fill={isUb || total / maxProvince > 0.7 ? "#0F172A" : "#0C4A6E"}
+                  return (
+                    <g key={region.id}>
+                      <path
+                        d={region.d}
+                        fill={fill}
+                        stroke={active ? "#0F172A" : "#FFFFFF"}
+                        strokeWidth={active ? 2.5 : 1}
+                        className="cursor-pointer transition-opacity duration-150"
+                        opacity={hoverProvince && !active ? 0.55 : 1}
+                        onMouseEnter={() => setHoverProvince(region.id)}
+                        onMouseLeave={() => setHoverProvince(null)}
+                        onClick={() => {
+                          if (isUb) scrollToUb();
+                        }}
+                      />
+                      {total > 0 && (
+                        <text
+                          x={region.cx}
+                          y={region.cy}
+                          textAnchor="middle"
+                          dominantBaseline="central"
+                          className="pointer-events-none select-none"
+                          fontSize={isUb ? 13 : 11}
+                          fontWeight={700}
+                          fill={
+                            isUb || total / maxProvince > 0.7
+                              ? "#0F172A"
+                              : "#0C4A6E"
+                          }
+                        >
+                          {total}
+                        </text>
+                      )}
+                    </g>
+                  );
+                })}
+              </svg>
+
+              {activeProvince && (
+                <MapTooltip
+                  title={activeProvince.name}
+                  rows={[
+                    {
+                      label: "Тохиолдол",
+                      value: String(activeProvince.total),
+                    },
+                    {
+                      label: "Нас баралт",
+                      value: String(activeProvince.deaths),
+                    },
+                  ]}
+                />
+              )}
+
+              <LegendRow
+                items={[
+                  { color: "#E2E8F0", label: "0" },
+                  { color: "#BAE6FD", label: "Бага" },
+                  { color: "#38BDF8", label: "Дунд" },
+                  { color: "#FB923C", label: "Их" },
+                  { color: "#F43F5E", label: "Маш их" },
+                  { color: "#FACC15", label: "Улаанбаатар" },
+                ]}
+              />
+            </div>
+
+            <aside className="flex max-h-[420px] flex-col gap-2 overflow-y-auto lg:max-h-[480px] lg:pt-1">
+              <p className="px-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Бүртгэлтэй аймаг
+              </p>
+              {provinces.filter((p) => p.total > 0).length === 0 ? (
+                <p className="rounded-xl border border-dashed border-slate-200 px-3 py-4 text-sm text-slate-500">
+                  Мэдээлэл байхгүй
+                </p>
+              ) : (
+                provinces
+                  .filter((p) => p.total > 0)
+                  .map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onMouseEnter={() => setHoverProvince(p.id)}
+                      onMouseLeave={() => setHoverProvince(null)}
+                      onClick={() => {
+                        if (p.id === "Улаанбаатар") scrollToUb();
+                      }}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-xl border px-3 py-2.5 text-left text-sm transition",
+                        hoverProvince === p.id
+                          ? "border-sky-300 bg-sky-50"
+                          : "border-slate-200 bg-white hover:border-sky-200"
+                      )}
                     >
-                      {total}
-                    </text>
-                  )}
-                </g>
-              );
-            })}
-          </svg>
-
-          {activeProvince && (
-            <MapTooltip
-              title={activeProvince.name}
-              rows={[
-                { label: "Тохиолдол", value: String(activeProvince.total) },
-                { label: "Нас баралт", value: String(activeProvince.deaths) },
-              ]}
-            />
-          )}
-
-          <LegendRow
-            items={[
-              { color: "#E2E8F0", label: "0" },
-              { color: "#BAE6FD", label: "Бага" },
-              { color: "#38BDF8", label: "Дунд" },
-              { color: "#FB923C", label: "Их" },
-              { color: "#F43F5E", label: "Маш их" },
-              { color: "#FACC15", label: "Улаанбаатар" },
-            ]}
-          />
-
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {provinces
-              .filter((p) => p.total > 0)
-              .slice(0, 12)
-              .map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onMouseEnter={() => setHoverProvince(p.id)}
-                  onMouseLeave={() => setHoverProvince(null)}
-                  className={cn(
-                    "flex items-center justify-between rounded-xl border px-3 py-2 text-left text-sm transition",
-                    hoverProvince === p.id
-                      ? "border-sky-300 bg-sky-50"
-                      : "border-slate-200 bg-white hover:border-sky-200"
-                  )}
-                >
-                  <span className="font-medium text-slate-800">{p.name}</span>
-                  <span className="tabular-nums font-bold text-sky-700">
-                    {p.total}
-                  </span>
-                </button>
-              ))}
+                      <span className="font-medium text-slate-800">{p.name}</span>
+                      <span className="tabular-nums font-bold text-sky-700">
+                        {p.total}
+                      </span>
+                    </button>
+                  ))
+              )}
+            </aside>
           </div>
         </div>
       </ChartCard>

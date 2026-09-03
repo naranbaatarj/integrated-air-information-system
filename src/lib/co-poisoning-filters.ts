@@ -24,7 +24,7 @@ export const FILTER_QUERY_KEYS = [
 
 export type FilterQueryKey = (typeof FILTER_QUERY_KEYS)[number];
 
-export type PeriodValue = "7d" | "30d" | "month" | "year" | "custom";
+export type PeriodValue = "7d" | "30d" | "month" | "year" | "heating" | "custom";
 
 export type CoPoisoningFilterState = {
   period: PeriodValue;
@@ -68,6 +68,7 @@ export const PERIOD_OPTIONS: { value: PeriodValue; label: string }[] = [
   { value: "30d", label: "30 хоног" },
   { value: "month", label: "Энэ сар" },
   { value: "year", label: "Энэ жил" },
+  { value: "heating", label: "Халаалтын улирал" },
   { value: "custom", label: "Огноо сонгох" },
 ];
 
@@ -93,6 +94,23 @@ function toIsoDate(date: Date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+/**
+ * Heating season for calendar year Y: Sep 1 (Y-1) → May 31 Y.
+ * Example: in 2026 → 2025-09-01 … 2026-05-31.
+ * If still inside that window (Jan–May), end date is capped at today.
+ */
+export function resolveHeatingSeasonRange(now = new Date()) {
+  const year = now.getFullYear();
+  const from = `${year - 1}-09-01`;
+  const seasonEnd = `${year}-05-31`;
+  const today = toIsoDate(now);
+
+  return {
+    from,
+    to: today < seasonEnd ? today : seasonEnd,
+  };
 }
 
 export function formatIsoDot(iso: string) {
@@ -126,6 +144,10 @@ export function resolveDateRange(
 
   if (state.period === "month") {
     return { from: toIsoDate(new Date(now.getFullYear(), now.getMonth(), 1)), to: today };
+  }
+
+  if (state.period === "heating") {
+    return resolveHeatingSeasonRange(now);
   }
 
   return { from: toIsoDate(new Date(now.getFullYear(), 0, 1)), to: today };
@@ -236,7 +258,7 @@ export function applyPublicFilter(
 export function granularityFromFilter(
   state: CoPoisoningFilterState
 ): "year" | "month" | "day" {
-  if (state.period === "year") return "month";
+  if (state.period === "year" || state.period === "heating") return "month";
   if (state.period === "7d" || state.period === "30d" || state.period === "month") {
     return "day";
   }
@@ -253,6 +275,10 @@ export function granularityFromFilter(
 
 export function periodChipLabel(state: CoPoisoningFilterState, now = new Date()) {
   if (state.period === "year") return `${now.getFullYear()} он`;
+  if (state.period === "heating") {
+    const { from, to } = resolveHeatingSeasonRange(now);
+    return `Халаалтын улирал (${formatIsoDot(from)} — ${formatIsoDot(to)})`;
+  }
   if (state.period === "custom") {
     const { from, to } = resolveDateRange(state, now);
     if (from && to) return `${formatIsoDot(from)} — ${formatIsoDot(to)}`;
